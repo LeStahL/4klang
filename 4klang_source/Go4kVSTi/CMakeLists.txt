@@ -29,3 +29,8 @@ add_custom_command(TARGET 4klang PRE_BUILD BYPRODUCTS 4klang.obj
 add_library(8klang SHARED ${GO4KVSTI_CXX_SOURCES} win/Go4kVSTi2.def 4klang.obj)
 target_compile_definitions(8klang PUBLIC _8KLANG)
 target_link_libraries(8klang vstgui Comctl32 odbc32 odbccp32)
+
+add_executable(4klang_standalone
+    source/GoSynth/Go4kStandalone.cpp
+)
+target_link_libraries(4klang_standalone PRIVATE 4klang)

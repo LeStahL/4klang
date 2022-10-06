@@ -33,7 +33,7 @@ BOOL WINAPI DllMain (HINSTANCE hInst, DWORD dwReason, LPVOID lpvReserved)
 	switch (dwReason)
 	{
 		// wird aufgerufen, wenn zum ersten mal das plugin aktiviert wird
-		// also hier init für den synth
+		// also hier init fï¿½r den synth
 		case DLL_PROCESS_ATTACH:
             //MessageBox(NULL, "DLL_PROCESS_ATTACH", "DllMain", MB_OK);
 			Go4kVSTiGUI_Create(hInst);
@@ -41,7 +41,7 @@ BOOL WINAPI DllMain (HINSTANCE hInst, DWORD dwReason, LPVOID lpvReserved)
 			break;
 		// wird aufgerufen, wenn das plugin nicht mehr verwendet wird
 		// entweder bei entfernen des letzten, schliessen des songs oder
-		// des programms. Also hier Deinit und zerstörung des Synths
+		// des programms. Also hier Deinit und zerstï¿½rung des Synths
 		case DLL_PROCESS_DETACH:
 			//MessageBox(NULL, "DLL_PROCESS_DETACH", "DllMain", MB_OK);
 			Go4kVSTiGUI_Destroy();
