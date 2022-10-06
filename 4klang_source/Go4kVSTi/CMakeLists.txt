@@ -22,6 +22,7 @@ if(USE_QT)
         source/GoSynth/Go4kVSTiGUIQt.cpp
         source/GoSynth/SynthWindow.cpp
         source/GoSynth/SynthWindow.ui
+        source/GoSynth/Model4kp.cpp
     )
     set(GO4kVSTI_LIBRARIES ${GO4kVSTI_LIBRARIES} ${QT_PREFIXED_COMPONENTS})
     set(GO4kVSTI_DEFINITIONS USE_QT)

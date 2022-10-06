@@ -1,3 +1,5 @@
+#pragma once
+
 #include <windows.h>
 
 #define ButtonGroupChanged(btn_firstid, btn_lastid, test_id, seltab, result_index)	\
