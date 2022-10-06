@@ -3499,4 +3499,3 @@ void GetStreamFileName()
 		Go4kVSTi_SaveByteStream(hInstance, ofn.lpstrFile, useenvlevels, useenotevalues, clipoutput, undenormalize, objformat, output16);
 	}
 }
-

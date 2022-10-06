@@ -2,7 +2,11 @@
 
 #include <stdio.h>
 
+#ifdef USE_QT
+#include "Go4kVSTiGUIQt.h"
+#else
 #include "Go4kVSTiGUI.h"
+#endif
 
 void main() {
     LoadLibrary("4klang.dll");
