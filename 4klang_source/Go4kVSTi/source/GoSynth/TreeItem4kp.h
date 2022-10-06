@@ -10,7 +10,7 @@ typedef enum {
     Unit
 } TreeItemType;
 
-class TreeItem4kp {
+class TreeItem4kp : public QObject {
     Q_OBJECT
     
     QString _name;
@@ -32,5 +32,5 @@ class TreeItem4kp {
     void *data4klang();
     TreeItemType type();
     QString treeKey();
-    QObject *childByTreeKey();
+    QObject *childByTreeKey(QString treeKey);
 };

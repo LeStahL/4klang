@@ -9,8 +9,11 @@ SynthWindow::SynthWindow()
     : QMainWindow()
     , _ui(new Ui::SynthWindow)
     , _settings(new QSettings("Alcatraz", "4klang"))
+    , _model(new Model4kp(this))
 {
     _ui->setupUi(this);
+    
+    _ui->treeView->setModel(_model);
 
     // Recent items
     _recentFilenames = _settings->value("recents").toStringList();
@@ -29,6 +32,7 @@ SynthWindow::~SynthWindow()
 {
     delete _ui;
     delete _settings;
+    delete _model;
 }
 
 void SynthWindow::close() {

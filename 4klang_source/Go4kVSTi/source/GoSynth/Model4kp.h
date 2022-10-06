@@ -6,11 +6,14 @@
 #include <QUndoStack>
 
 #include "Go4kVSTiCore.h"
+#include "TreeItem4kp.h"
+#include "Model4kp.h"
 
 class Model4kp : public QAbstractItemModel {
     Q_OBJECT
 
     SynthObjectP _synthObject;
+    TreeItem4kp *_rootItem;
 
     public:
     Model4kp(QObject *parent = nullptr);

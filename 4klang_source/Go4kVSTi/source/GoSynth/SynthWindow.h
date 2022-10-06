@@ -7,6 +7,8 @@
 #include <QList>
 #include <QAction>
 
+#include "Model4kp.h"
+
 namespace Ui {
     class SynthWindow;
 }
@@ -18,6 +20,7 @@ class SynthWindow : public QMainWindow {
     QSettings *_settings;
     QStringList _recentFilenames;
     QList<QAction *> _recentFilenameActions;
+    Model4kp *_model;
 
     void _openFileWithName(QString filename);
 

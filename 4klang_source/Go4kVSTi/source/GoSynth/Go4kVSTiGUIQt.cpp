@@ -21,7 +21,7 @@ DWORD WINAPI appThread(LPVOID params) {
     QApplication a(argc, argv);
     SynthWindow d;
     d.show();
-    a.exec();
+    return a.exec();
 }
 
 static HANDLE hThread;
