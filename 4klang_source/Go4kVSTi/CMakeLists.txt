@@ -57,12 +57,13 @@ add_executable(4klang_standalone
 )
 target_link_libraries(4klang_standalone PRIVATE 4klang ${QT_PREFIXED_COMPONENTS})
 
-add_custom_command(TARGET 4klang POST_BUILD
-    COMMAND Qt${QT_VERSION_MAJOR}::windeployqt $<TARGET_FILE:4klang>
-    COMMENT "Running windeployqt on 4klang..."
-)
-
-add_custom_command(TARGET 8klang POST_BUILD
-    COMMAND Qt${QT_VERSION_MAJOR}::windeployqt $<TARGET_FILE:4klang>
-    COMMENT "Running windeployqt on 8klang..."
-)
+if(USE_QT)
+    add_custom_command(TARGET 4klang POST_BUILD
+        COMMAND Qt${QT_VERSION_MAJOR}::windeployqt $<TARGET_FILE:4klang>
+        COMMENT "Running windeployqt on 4klang..."
+    )
+    add_custom_command(TARGET 8klang POST_BUILD
+        COMMAND Qt${QT_VERSION_MAJOR}::windeployqt $<TARGET_FILE:4klang>
+        COMMENT "Running windeployqt on 8klang..."
+    )
+endif()

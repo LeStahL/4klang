@@ -8,6 +8,8 @@ namespace Ui {
 }
 
 class SynthWindow : public QMainWindow {
+    Q_OBJECT
+    
     Ui::SynthWindow *_ui;
 
     public:
