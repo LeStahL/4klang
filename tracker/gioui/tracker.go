@@ -113,8 +113,8 @@ func NewTracker(model *tracker.Model, synthService sointu.SynthService) *Tracker
 		PanicBtn:         new(widget.Clickable),
 		RecordBtn:        new(widget.Clickable),
 		TrackHexCheckBox: new(widget.Bool),
-		Menus:            make([]Menu, 2),
-		MenuBar:          make([]widget.Clickable, 2),
+		Menus:            make([]Menu, 3),
+		MenuBar:          make([]widget.Clickable, 3),
 		refresh:          make(chan struct{}, 1), // use non-blocking sends; no need to queue extra ticks if one is queued already
 
 		TopHorizontalSplit:    &Split{Ratio: -.6},

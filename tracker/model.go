@@ -1408,3 +1408,7 @@ func intMin(a, b int) int {
 	}
 	return b
 }
+
+func (m *Model) ExportExecutable() {
+	print("Hi")
+}

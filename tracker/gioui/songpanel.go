@@ -101,6 +101,14 @@ func (t *Tracker) layoutMenuBar(gtx C) D {
 		clickedItem, hasClicked = t.Menus[1].Clicked()
 	}
 
+	for clickedItem, hasClicked := t.Menus[2].Clicked(); hasClicked; {
+		switch clickedItem {
+		case 0:
+			t.ExportExecutable()
+		}
+		clickedItem, hasClicked = t.Menus[2].Clicked()
+	}
+
 	return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
 		layout.Rigid(t.layoutMenu("File", &t.MenuBar[0], &t.Menus[0], unit.Dp(200),
 			fileMenuItems...,
@@ -111,6 +119,9 @@ func (t *Tracker) layoutMenuBar(gtx C) D {
 			MenuItem{IconBytes: icons.ContentContentCopy, Text: "Copy", ShortcutText: shortcutKey + "C"},
 			MenuItem{IconBytes: icons.ContentContentPaste, Text: "Paste", ShortcutText: shortcutKey + "V"},
 			MenuItem{IconBytes: icons.ImageCrop, Text: "Remove unused data"},
+		)),
+		layout.Rigid(t.layoutMenu("Export", &t.MenuBar[2], &t.Menus[2], unit.Dp(200),
+			MenuItem{IconBytes: icons.CommunicationImportExport, Text: "Export executable", ShortcutText: shortcutKey + "E"},
 		)),
 	)
 }
