@@ -1,5 +1,40 @@
 cmake_minimum_required(VERSION 3.10)
 
+find_program(GO NAMES go)
+if(NOT GO)
+  message(FATAL_ERROR "go not found. Get it from: https://golang.org")
+else()
+  message("go found at: ${GO}")
+endif()
+
+find_program(NODE NAMES node)
+if(NOT NODE)
+  message(WARNING "node not found, cannot run WebAssembly tests. Get it from: https://nodejs.org/")
+else()
+  message("node found at: ${NODE}")
+endif()
+
+find_program(WAT2WASM NAMES wat2wasm)
+if(NOT WAT2WASM)
+  message(WARNING "wat2wasm not found, cannot build wasm tests. Get it from: https://github.com/WebAssembly/wabt")
+else()
+  message("wat2wasm found at: ${WAT2WASM}")
+endif()
+
+find_program(NASM NAMES nasm)
+if(NOT NASM)
+  message(WARNING "nasm not found, cannot build player example or nasm tests. Get it from: https://www.nasm.us/")
+endif()
+set(CMAKE_ASM_NASM_COMPILER ${NASM})
+
+if(X86 AND CRINKLER)
+  find_program(CRINKLER NAMES crinkler)
+  if(NOT CRINKLER)
+    message(WARNING "crinkler not found, cannot build player example. Get it from: https://github.com/runestubbe/Crinkler")
+  endif()
+  set(CMAKE_LINKER ${CRINKLER})
+endif()
+
 # This policy is needed so that we can set the MSVC_RUNTIME to statically linked
 # i.e. set_property(TARGET 4klang PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 cmake_policy(SET CMP0091 NEW)
@@ -7,7 +42,8 @@ cmake_policy(SET CMP0091 NEW)
 project(sointu
     VERSION 0.0.0
     DESCRIPTION "A modular synthesizer for 4k/8k/64k intros"
-    LANGUAGES C CXX)
+    LANGUAGES ASM_NASM
+)
 
 # Only do these if this is the main project, and not if it is included through add_subdirectory
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
@@ -24,36 +60,15 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CTest)
 endif()
 
-IF(APPLE)
+if(APPLE)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-no_pie")
 endif()
 
-find_program(GO NAMES go)
-if(NOT GO)
-  message(FATAL_ERROR "go not found. Get it from: https://golang.org")
-else()
-  message("go found at: ${GO}")
-endif()
-
-find_program(NODE NAMES node)
-if(NOT NODE)
-  message( WARNING "node not found, cannot run WebAssembly tests. Get it from: https://nodejs.org/" )
-else()
-  message("node found at: ${NODE}")
-endif()
-
-find_program(WAT2WASM NAMES wat2wasm)
-if(NOT WAT2WASM )
-  message( WARNING "wat2wasm not found, cannot build wasm tests. Get it from: https://github.com/WebAssembly/wabt)" )
-else()
-  message("wat2wasm found at: ${WAT2WASM}")
-endif()
-
-enable_language(ASM_NASM)
+# enable_language(ASM_NASM)
 
 # The normal NASM compile object does not include <DEFINES>
 # By putting them there, we can pass the same compile definitions to C and ASM
-set(CMAKE_ASM_NASM_COMPILE_OBJECT "<CMAKE_ASM_NASM_COMPILER> <INCLUDES> <DEFINES> <FLAGS> -f ${CMAKE_ASM_NASM_OBJECT_FORMAT} -o <OBJECT> <SOURCE>")
+set(CMAKE_ASM_NASM_COMPILE_OBJECT "<CMAKE_ASM_NASM_COMPILER> <INCLUDES> <DEFINES> <FLAGS> -o <OBJECT> <SOURCE>")
 
 if(WIN32)
     set(compilecmd ${CMAKE_CURRENT_BINARY_DIR}/sointu-compile.exe)
@@ -98,9 +113,10 @@ add_custom_command(
 add_library(${STATICLIB} ${sointuasm})
 set_target_properties(${STATICLIB} PROPERTIES LINKER_LANGUAGE C)
 target_include_directories(${STATICLIB} INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
+target_compile_options(${STATICLIB} PRIVATE -f ${CMAKE_ASM_NASM_OBJECT_FORMAT})
 
-# We should put examples here
-# add_subdirectory(examples)
+# Add examples subdirectory for the sointu asm example
+add_subdirectory(examples)
 
 # Testing only available if this is the main app
 # Emergency override 4KLANG_CMAKE_BUILD_TESTING provided as well
