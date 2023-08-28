@@ -74,6 +74,14 @@ add_custom_command(
 )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sointu-track${SU_TARGET_EXE_SUFFIX} DESTINATION bin)
 
+# Build the vsti plugin.
+add_custom_command(
+    COMMAND ${GO} build -buildmode=c-shared -tags=plugin -o sointu-vsti${SU_TARGET_DYNAMIC_LIBRARY_SUFFIX} ${PROJECT_SOURCE_DIR}/cmd/sointu-vsti/main.go
+    OUTPUT sointu-vsti${SU_TARGET_DYNAMIC_LIBRARY_SUFFIX}
+    DEPENDS "${sointusrc}" "${compilersrc}" "${compilecmdsrc}"
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sointu-vsti${SU_TARGET_DYNAMIC_LIBRARY_SUFFIX} DESTINATION vsti)
+
 # Build the sointu library.
 add_custom_command(
     COMMAND ${CMAKE_CURRENT_BINARY_DIR}/sointu-compile${SU_TARGET_EXE_SUFFIX} -arch=${SU_TARGET_ARCH} -a -o ${CMAKE_CURRENT_BINARY_DIR}
@@ -81,7 +89,11 @@ add_custom_command(
     BYPRODUCTS sointu.h
     # Ok, this is hacky - for the dependencies to come out correctly, the sointu library depends on everything!
     # not pretty, but works.
-    DEPENDS "${SU_TEMPLATE_SOURCES}" sointu-compile${SU_TARGET_EXE_SUFFIX} sointu-track${SU_TARGET_EXE_SUFFIX}
+    DEPENDS
+      "${SU_TEMPLATE_SOURCES}"
+      sointu-compile${SU_TARGET_EXE_SUFFIX}
+      sointu-track${SU_TARGET_EXE_SUFFIX}
+      sointu-vsti${SU_TARGET_DYNAMIC_LIBRARY_SUFFIX}
 )
 add_library(sointu sointu.asm)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sointu.h DESTINATION include)

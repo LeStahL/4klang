@@ -15,6 +15,8 @@ set(SU_TARGET_EXE_SUFFIX "")
 message(STATUS "Target executable suffix: `${SU_TARGET_EXE_SUFFIX}`.")
 set(SU_TARGET_STATIC_LIBRARY_SUFFIX ".a")
 message(STATUS "Target static library suffix: `${SU_TARGET_STATIC_LIBRARY_SUFFIX}`.")
+set(SU_TARGET_DYNAMIC_LIBRARY_SUFFIX ".so")
+message(STATUS "Target dynamic library suffix: `${SU_TARGET_DYNAMIC_LIBRARY_SUFFIX}`.")
 
 set(SU_HOST_USES_CRINKLER OFF)
 set(SU_HOST_IS_WINDOWS OFF)
