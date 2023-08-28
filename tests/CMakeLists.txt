@@ -6,7 +6,7 @@ function(regression_test testname)
     else()
         if(ARGV3)
             set(source ${ARGV3}.yml)            
-        else()           
+        else()
             set(source ${testname}.yml)
         endif()
 

@@ -37,7 +37,11 @@
 %define SU_SYNC
 {{- end}}
 
+%ifdef SU_TARGET_ELF
+section .text
+%else ; SU_TARGET_ELF
 section _su_symbols text
+%endif ; SU_TARGET_ELF
 _su_symbols:
     extern _su_render_song@4
 

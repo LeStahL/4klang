@@ -1,24 +1,28 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.14)
 
+# General options
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# Find programs required to build.
 find_program(GO NAMES go)
 if(NOT GO)
   message(FATAL_ERROR "go not found. Get it from: https://golang.org")
 else()
-  message("go found at: ${GO}")
+  message(STATUS "go found at: ${GO}")
 endif()
 
 find_program(NODE NAMES node)
 if(NOT NODE)
   message(WARNING "node not found, cannot run WebAssembly tests. Get it from: https://nodejs.org/")
 else()
-  message("node found at: ${NODE}")
+  message(STATUS "node found at: ${NODE}")
 endif()
 
 find_program(WAT2WASM NAMES wat2wasm)
 if(NOT WAT2WASM)
   message(WARNING "wat2wasm not found, cannot build wasm tests. Get it from: https://github.com/WebAssembly/wabt")
 else()
-  message("wat2wasm found at: ${WAT2WASM}")
+  message(STATUS "wat2wasm found at: ${WAT2WASM}")
 endif()
 
 find_program(NASM NAMES nasm)
@@ -27,99 +31,82 @@ if(NOT NASM)
 endif()
 set(CMAKE_ASM_NASM_COMPILER ${NASM})
 
-if(X86 AND CRINKLER)
-  find_program(CRINKLER NAMES crinkler)
-  if(NOT CRINKLER)
-    message(WARNING "crinkler not found, cannot build player example. Get it from: https://github.com/runestubbe/Crinkler")
-  endif()
-  set(CMAKE_LINKER ${CRINKLER})
-endif()
-
-# This policy is needed so that we can set the MSVC_RUNTIME to statically linked
-# i.e. set_property(TARGET 4klang PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-cmake_policy(SET CMP0091 NEW)
+# Get the sointu version from git.
+execute_process(
+  COMMAND ${GO} run github.com/choffmeister/git-describe-semver --dir ${CMAKE_CURRENT_LIST_DIR} --fallback v0.0.0
+  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+  OUTPUT_VARIABLE full_version
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+string(REGEX MATCH "[^-]*" cmake_compatible_version ${full_version})
+string(REGEX REPLACE "^[v]" "" cmake_compatible_version ${cmake_compatible_version})
 
 project(sointu
-    VERSION 0.0.0
+    VERSION ${cmake_compatible_version}
     DESCRIPTION "A modular synthesizer for 4k/8k/64k intros"
-    LANGUAGES ASM_NASM
+    HOMEPAGE_URL "https://github.com/vsariola/sointu"
+    LANGUAGES ASM_NASM C
 )
 
-# Only do these if this is the main project, and not if it is included through add_subdirectory
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    # Let's ensure -std=c++xx instead of -std=g++xx
-    set(CMAKE_CXX_EXTENSIONS OFF)
-
-    # Let's nicely support folders in IDE's
-    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-    # Testing only available if this is the main app
-    # Note this needs to be done in the main CMakeLists
-    # since it calls enable_testing, which must be in the
-    # main CMakeLists.
-    include(CTest)
-endif()
-
-if(APPLE)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-no_pie")
-endif()
-
-# enable_language(ASM_NASM)
-
-# The normal NASM compile object does not include <DEFINES>
-# By putting them there, we can pass the same compile definitions to C and ASM
-set(CMAKE_ASM_NASM_COMPILE_OBJECT "<CMAKE_ASM_NASM_COMPILER> <INCLUDES> <DEFINES> <FLAGS> -o <OBJECT> <SOURCE>")
-
-if(WIN32)
-    set(compilecmd ${CMAKE_CURRENT_BINARY_DIR}/sointu-compile.exe)
-else()
-    set(compilecmd ${CMAKE_CURRENT_BINARY_DIR}/sointu-compile)
-endif()
+# if(APPLE)
+#     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-no_pie")
+# endif()
 
 # the tests include the entire ASM but we still want to rebuild when they change
-file(GLOB x86templates ${PROJECT_SOURCE_DIR}/templates/amd64-386/*.asm)
-file(GLOB wasmtemplates ${PROJECT_SOURCE_DIR}/templates/wasm/*.wat)
 file(GLOB sointusrc "${PROJECT_SOURCE_DIR}/*.go")
 file(GLOB compilersrc "${PROJECT_SOURCE_DIR}/compiler/*.go")
 file(GLOB compilecmdsrc "${PROJECT_SOURCE_DIR}/cmd/sointu-compile/*.go")
 
-if(DEFINED CMAKE_C_SIZEOF_DATA_PTR AND CMAKE_C_SIZEOF_DATA_PTR EQUAL 8)
-    set(arch "amd64")
-elseif(DEFINED CMAKE_CXX_SIZEOF_DATA_PTR AND CMAKE_CXX_SIZEOF_DATA_PTR EQUAL 8)
-    set(arch "amd64")
-else()
-    set(arch "386")
-endif()
-
-# Sointu as static library
-set(STATICLIB sointu)
-set(sointuasm sointu.asm)
-
-
 # Build sointu-cli only once because go run has everytime quite a bit of delay when
 # starting
-add_custom_target(
-    sointu-compiler
-    COMMAND ${GO} build -o ${compilecmd} ${PROJECT_SOURCE_DIR}/cmd/sointu-compile/main.go
-    SOURCES "${sointusrc}" "${compilersrc}" "${compilecmdsrc}"
-)
-
 add_custom_command(
-    OUTPUT ${sointuasm}
-    COMMAND ${compilecmd} -arch=${arch} -a -o ${CMAKE_CURRENT_BINARY_DIR}
-    DEPENDS "${templates}" sointu-compiler
+    COMMAND ${GO} build -o sointu-compile${SU_TARGET_EXE_SUFFIX} ${PROJECT_SOURCE_DIR}/cmd/sointu-compile/main.go
+    OUTPUT sointu-compile${SU_TARGET_EXE_SUFFIX}
+    DEPENDS "${sointusrc}" "${compilersrc}" "${compilecmdsrc}"
 )
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sointu-compile${SU_TARGET_EXE_SUFFIX} DESTINATION bin)
 
-add_library(${STATICLIB} ${sointuasm})
-set_target_properties(${STATICLIB} PROPERTIES LINKER_LANGUAGE C)
-target_include_directories(${STATICLIB} INTERFACE ${CMAKE_CURRENT_BINARY_DIR})
-target_compile_options(${STATICLIB} PRIVATE -f ${CMAKE_ASM_NASM_OBJECT_FORMAT})
+# Build the tracker.
+add_custom_command(
+    COMMAND ${GO} build -o sointu-track${SU_TARGET_EXE_SUFFIX} ${PROJECT_SOURCE_DIR}/cmd/sointu-track/main.go
+    OUTPUT sointu-track${SU_TARGET_EXE_SUFFIX}
+    DEPENDS "${sointusrc}" "${compilersrc}" "${compilecmdsrc}"
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sointu-track${SU_TARGET_EXE_SUFFIX} DESTINATION bin)
+
+# Build the sointu library.
+add_custom_command(
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/sointu-compile${SU_TARGET_EXE_SUFFIX} -arch=${SU_TARGET_ARCH} -a -o ${CMAKE_CURRENT_BINARY_DIR}
+    OUTPUT sointu.asm
+    BYPRODUCTS sointu.h
+    # Ok, this is hacky - for the dependencies to come out correctly, the sointu library depends on everything!
+    # not pretty, but works.
+    DEPENDS "${SU_TEMPLATE_SOURCES}" sointu-compile${SU_TARGET_EXE_SUFFIX} sointu-track${SU_TARGET_EXE_SUFFIX}
+)
+add_library(sointu sointu.asm)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sointu.h DESTINATION include)
+install(TARGETS sointu DESTINATION lib)
 
 # Add examples subdirectory for the sointu asm example
 add_subdirectory(examples)
 
-# Testing only available if this is the main app
-# Emergency override 4KLANG_CMAKE_BUILD_TESTING provided as well
-if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR SOINTU_CMAKE_BUILD_TESTING) AND BUILD_TESTING)
-    add_subdirectory(tests)
-endif()
+# # Only do these if this is the main project, and not if it is included through add_subdirectory
+# if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+#     # Let's ensure -std=c++xx instead of -std=g++xx
+#     set(CMAKE_CXX_EXTENSIONS OFF)
+
+#     # Let's nicely support folders in IDE's
+#     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+#     # Testing only available if this is the main app
+#     # Note this needs to be done in the main CMakeLists
+#     # since it calls enable_testing, which must be in the
+#     # main CMakeLists.
+#     include(CTest)
+# endif()
+
+# # Testing only available if this is the main app
+# # Emergency override 4KLANG_CMAKE_BUILD_TESTING provided as well
+# if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR SOINTU_CMAKE_BUILD_TESTING) AND BUILD_TESTING)
+#     add_subdirectory(tests)
+# endif()

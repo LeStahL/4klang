@@ -13,16 +13,20 @@ add_custom_command(
         "Compiling ${PROJECT_SOURCE_DIR}/examples/patches/physics-girl-st.yml..."
 )
 
-add_executable(asmplay
-    asmplay.${SU_TARGET_OS}.asm
-    physics_girl_st.asm
-    physics_girl_st.inc
+add_library(physics_girl_st physics_girl_st.asm)
+add_dependencies(physics_girl_st sointu)
+
+add_executable(cplay
+    cplay.${SU_TARGET_OS}.c
+    physics_girl_st.h
 )
-add_dependencies(asmplay sointu)
 if(SU_TARGET_OS_IS_WINDOWS)
-    target_link_libraries(asmplay PRIVATE winmm)
+    # TODO: Link
 elseif(SU_TARGET_OS_IS_UNIX)
-    # target_compile_options(asmplay PRIVATE -D_REENTRANT)
-    target_link_libraries(asmplay PRIVATE asound pthread dl)
-    target_link_options(asmplay PRIVATE)
+    target_compile_options(cplay PRIVATE)
+    target_link_libraries(cplay PRIVATE asound pthread)
+    target_link_options(cplay PRIVATE -z noexecstack -no-pie)
 endif()
+target_link_libraries(cplay PRIVATE physics_girl_st)
+
+install(TARGETS cplay DESTINATION examples)
