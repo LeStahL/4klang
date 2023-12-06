@@ -101,7 +101,12 @@ def build(setup_kwargs):
         cwd=current_source_dir,
         shell=host_is_windows,
         env=environment,
+        capture_output=True,
     )
+    if result.returncode != 0:
+        print("poetry env info process exited with:", result.returncode)
+        print(result.stdout, result.stderr)
+        exit(1)
 
     # Export the plugin.
     print("Exporting the gopy-generated bindings.")
