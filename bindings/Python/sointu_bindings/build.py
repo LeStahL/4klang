@@ -60,10 +60,9 @@ def build(setup_kwargs):
         exit(1)
 
     gopath = result.stdout.decode('utf-8').strip()
-    print("GOPATH:", result.stdout)
-
     gobin = join(gopath, 'bin')
     assert exists(gobin)
+    print("GOPATH:", gobin)
 
     # Get Python venv path.
     result = run(
@@ -80,10 +79,9 @@ def build(setup_kwargs):
         exit(1)
 
     pyenvpath = result.stdout.decode('utf-8').strip()
-    print("PYENVPATH:", result.stdout)
-
     python = join(pyenvpath, 'bin', 'python')
     assert exists(python)
+    print("Python:", python)
 
     environment = environ.copy()
     environment['PATH'] = ':'.join(environment['PATH'].split(':') + [gobin])
@@ -96,6 +94,7 @@ def build(setup_kwargs):
             "build",
             "--output={}".format(current_binary_dir),
             "-vm={}".format(python),
+            "-name=sointu",
             project_source_dir,
         ],
         cwd=current_source_dir,
@@ -104,7 +103,26 @@ def build(setup_kwargs):
         capture_output=True,
     )
     if result.returncode != 0:
-        print("poetry env info process exited with:", result.returncode)
+        print("gopy build process exited with:", result.returncode)
+        print(result.stdout, result.stderr)
+        exit(1)
+
+    # Build go part of bindings using cgo.
+    print("Using go to generate cgo library.")
+    result = run(
+        args=[
+            "go", "build",
+            "-buildmode=c-shared",
+            "-o", join(current_binary_dir, "libsointu_go.so"),
+            join(current_binary_dir, "sointu.go"),
+        ],
+        cwd=current_binary_dir,
+        shell=host_is_windows,
+        env=environment,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        print("go build process exited with:", result.returncode)
         print(result.stdout, result.stderr)
         exit(1)
 
@@ -120,6 +138,24 @@ def build(setup_kwargs):
                 ],
                 sources=[
                     join(current_binary_dir, "sointu.c"),
+                ],
+                library_dirs=[
+                    current_binary_dir,
+                ],
+                libraries=[
+                    "sointu_go",
+                ],
+                depends=[
+                    join(current_binary_dir, "libsointu_go.so"),
+                ],
+                runtime_library_dirs=[
+                    current_binary_dir,
+                ],
+                extra_link_args=[
+                    # TODO
+                ] if host_is_windows else [
+                    "-z", "noexecstack",
+                    "--no-pie",
                 ],
             ),
         ],

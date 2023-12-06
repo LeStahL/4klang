@@ -9,7 +9,8 @@ packages = [
     { include = "sointu_bindings" },
 ]
 include = [
-    { path = "sointu.so", format="wheel" },
+    { path = "sointu*.so", format="wheel" },
+    { path = "build/libsointu_go.so", format="wheel" },
 ]
 
 [tool.poetry.build]
