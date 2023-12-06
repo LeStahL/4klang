@@ -10,8 +10,6 @@ from os.path import (
     join,
     abspath,
     exists,
-    basename,
-    splitext,
 )
 from os import mkdir, environ
 from subprocess import run
@@ -40,14 +38,12 @@ def build(setup_kwargs):
     cwd = abspath(".")
     print("Running from:", cwd)
 
-    current_source_dir = abspath(dirname(__file__))
+    current_source_dir = abspath(join(dirname(__file__), '..'))
     project_source_dir = abspath(join(current_source_dir, "..", ".."))
     current_binary_dir = join(current_source_dir, 'build')
     if not exists(current_binary_dir):
         mkdir(current_binary_dir)
     host_is_windows = system() == "Windows"
-    executable_suffix = ".exe" if host_is_windows else ""
-    object_suffix = ".obj" if host_is_windows else ".o"
 
     # Get GOBIN path.
     result = run(
@@ -59,8 +55,8 @@ def build(setup_kwargs):
         capture_output=True,
     )
     if result.returncode != 0:
-        print("go install process exited with:", result.returncode)
-        print(result.stdout)
+        print("go env process exited with:", result.returncode)
+        print(result.stdout, result.stderr)
         exit(1)
 
     gopath = result.stdout.decode('utf-8').strip()
@@ -68,6 +64,26 @@ def build(setup_kwargs):
 
     gobin = join(gopath, 'bin')
     assert exists(gobin)
+
+    # Get Python venv path.
+    result = run(
+        args=[
+            "poetry", "env", "info", "--path",
+        ],
+        cwd=current_source_dir,
+        shell=host_is_windows,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        print("poetry env info process exited with:", result.returncode)
+        print(result.stdout, result.stderr)
+        exit(1)
+
+    pyenvpath = result.stdout.decode('utf-8').strip()
+    print("PYENVPATH:", result.stdout)
+
+    python = join(pyenvpath, 'bin', 'python')
+    assert exists(python)
 
     environment = environ.copy()
     environment['PATH'] = ':'.join(environment['PATH'].split(':') + [gobin])
@@ -79,7 +95,7 @@ def build(setup_kwargs):
             "gopy",
             "build",
             "--output={}".format(current_binary_dir),
-            "-vm='poetry run python'",
+            "-vm={}".format(python),
             project_source_dir,
         ],
         cwd=current_source_dir,
@@ -98,7 +114,7 @@ def build(setup_kwargs):
                     current_source_dir,
                 ],
                 sources=[
-                    "sointu.c",
+                    join(current_binary_dir, "sointu.c"),
                 ],
             ),
         ],

@@ -7,7 +7,6 @@ license = "MIT"
 readme = "README.md"
 packages = [
     { include = "sointu" },
-    { include = "build" },
 ]
 include = [
     { path = "sointu.so", format="wheel" },
