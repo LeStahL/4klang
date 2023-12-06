@@ -6,6 +6,7 @@ require (
 	gioui.org v0.3.1
 	gioui.org/x v0.1.0
 	github.com/Masterminds/sprig v2.22.0+incompatible
+	github.com/go-python/gopy v0.4.7
 	github.com/hajimehoshi/oto v0.6.6
 	golang.org/x/exp v0.0.0-20221012211006-4de253d81b95
 	golang.org/x/exp/shiny v0.0.0-20220827204233-334a2380cb91
@@ -22,17 +23,22 @@ require (
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/go-text/typesetting v0.0.0-20230803102845-24e03d8b5372 // indirect
 	github.com/godbus/dbus/v5 v5.0.6 // indirect
+	github.com/gonuts/commander v0.1.0 // indirect
+	github.com/gonuts/flag v0.1.0 // indirect
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/testify v1.6.1 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/image v0.7.0 // indirect
 	golang.org/x/mobile v0.0.0-20201217150744-e6ae53a27f4f // indirect
+	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/tools v0.16.0 // indirect
 	pipelined.dev/pipe v0.11.0 // indirect
 	pipelined.dev/signal v0.10.0 // indirect
 )

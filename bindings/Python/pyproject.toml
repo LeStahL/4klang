@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "sointu"
+version = "0.1.0"
+description = "Python bindings for the Sointu sizecoding synthesizer."
+authors = ["Alexander Kraus <nr4@z10.info>"]
+license = "MIT"
+readme = "README.md"
+packages = [
+    { include = "sointu" },
+    { include = "build" },
+]
+include = [
+    { path = "sointu.so", format="wheel" },
+]
+
+[tool.poetry.build]
+script = "sointu/build.py"
+generate-setup-file = true
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+gopy = "^0.7.3"
+setuptools = "^69.0.2"
+pybindgen = "^0.22.1"
+wheel = "^0.42.0"
+
+[tool.poetry.group.dev.dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0a3", "poetry>=0.12", "setuptools", "wheel", "pybindgen>=0.22.1"]
+build-backend = "poetry.core.masonry.api"

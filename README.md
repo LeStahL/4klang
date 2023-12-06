@@ -308,6 +308,22 @@ either Debug or Release and either x86 or x64 build, and hit build all.
 These are automatically invoked by CTest if [node](https://nodejs.org) and
 [wat2wasm](https://github.com/WebAssembly/wabt) are found in the path.
 
+### Python bindings
+
+Sointu has bindings for Python3 (using gopy and poetry).
+
+#### Prequisites
+
+- [go](https://golang.org/) installed and in the system `PATH`.
+- [Python-3.11](https://www.python.org/) with poetry installed and both in the system `PATH`.
+- Install the dependencies using `poetry install`.
+
+#### Building and debugging
+
+Build the Python bindings using `poetry build`.
+
+If you added the bindings to your project using Poetry, all of this will be done automatically for you. 
+
 New features since fork
 -----------------------
 
