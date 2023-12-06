@@ -6,14 +6,14 @@ authors = ["Alexander Kraus <nr4@z10.info>"]
 license = "MIT"
 readme = "README.md"
 packages = [
-    { include = "sointu" },
+    { include = "sointu_bindings" },
 ]
 include = [
     { path = "sointu.so", format="wheel" },
 ]
 
 [tool.poetry.build]
-script = "sointu/build.py"
+script = "sointu_bindings/build.py"
 generate-setup-file = true
 
 [tool.poetry.dependencies]
