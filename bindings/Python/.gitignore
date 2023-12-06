@@ -3,3 +3,4 @@ setup.py
 dist
 .venv
 __pycache__
+*.so
