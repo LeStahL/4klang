@@ -3,7 +3,7 @@ from unittest import (
     main,
 )
 from typing import Self
-from sointu import Pattern
+import sointu
 
 class TestBindings(TestCase):
     def test(self: Self) -> None:
