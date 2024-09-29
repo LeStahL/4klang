@@ -22,7 +22,7 @@ Selecting units in Sointu and pressing CTRL+C will copy the units to the clipboa
 ## Explanation of the Default Instrument
 
 When creating a new instrument in Sointu, it will by default contain the following stack:
-![Screenshot of the default instrument stack in Sointu](../images/default_instrument.png?raw=true)
+![Screenshot of the default instrument stack in Sointu](images/default_instrument.png?raw=true)
 ```yaml
 units:
 - type: envelope
