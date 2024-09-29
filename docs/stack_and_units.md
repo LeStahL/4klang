@@ -22,10 +22,7 @@ Selecting units in Sointu and pressing CTRL+C will copy the units to the clipboa
 ## Explanation of the Default Instrument
 
 When creating a new instrument in Sointu, it will by default contain the following stack:
-<details>
-<summary>
-![Screenshot of the default instrument stack in Sointu](https://github.com/LeStahL/blob/documentation/units/docs/images/default_instrument.png?raw=true)
-</summary>
+![Screenshot of the default instrument stack in Sointu](../images/default_instrument.png?raw=true)
 ```yaml
 units:
 - type: envelope
@@ -48,7 +45,6 @@ units:
   id: 15
   parameters: {auxgain: 64, outgain: 64, stereo: 1}
 ```
-</details>
 
 ## List of available Units
 
