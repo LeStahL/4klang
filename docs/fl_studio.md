@@ -1,3 +1,5 @@
+[[_TOC_]]
+
 # Using Sointu with FL Studio
 
 To write a Sointu track using FL studio that a coder can include into a 4k intro, several things need to be kept in mind. This document aims at covering these.

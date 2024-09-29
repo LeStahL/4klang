@@ -88,10 +88,10 @@ This adds the top two signals, pops both of the operands and pushes the result, 
 
 Send the top signal to an auxiliary output.
 Parameters:
-|Name|Effect|
-|----|------|
-|gain|Scales the signal before output|
-|channel|Selects the output to send to|
+|Name       |Effect                         |
+|-----------|-------------------------------|
+|gain       |Scales the signal before output|
+|channel    |Selects the output to send to  |
 
 ### `clip`
 
