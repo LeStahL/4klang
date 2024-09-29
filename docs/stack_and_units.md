@@ -24,7 +24,7 @@ Selecting units in Sointu and pressing CTRL+C will copy the units to the clipboa
 When creating a new instrument in Sointu, it will by default contain the following stack:
 <details>
 <summary>
-![alt text](images/default_instrument.png)
+![Screenshot of the default instrument stack in Sointu](https://github.com/LeStahL/blob/documentation/units/docs/images/default_instrument.png?raw=true)
 </summary>
 ```yaml
 units:
