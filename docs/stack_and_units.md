@@ -87,8 +87,8 @@ This adds the top two signals, pops both of the operands and pushes the result, 
 ### `aux`
 
 Send the top signal to an auxiliary output.
-Parameters:
-|Name       |Effect                         |
+
+|Parameter  |Effect                         |
 |-----------|-------------------------------|
 |gain       |Scales the signal before output|
 |channel    |Selects the output to send to  |
@@ -106,6 +106,14 @@ Determines a compression factor signal for the top signal on the stack and pushe
 |       |factor           |
 |operand|operand          |
 |...    |...              |
+
+|Parameter|Effect|
+|---------|------|
+|Attack   |
+|Release  |
+|Invgain  |
+|Threshold|
+|Ratio    |
 
 This means, that the compressed signal can be obtained by using the block
 
